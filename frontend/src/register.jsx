@@ -5,6 +5,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
 import './styles/Register.css';
 
 function Register() {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -37,6 +38,7 @@ function Register() {
 
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/register`, { 
+        username,
         email, 
         password 
       });
@@ -79,6 +81,18 @@ function Register() {
         )}
         
         <form onSubmit={handleRegister} className="register-form">
+          <div className="form-group">
+              <input
+                type="text"
+                id="username"
+                placeholder=" "
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+                minLength="3"
+              />
+              <label htmlFor="username">Username</label>
+            </div>  
           <div className="form-group">
             <input
               type="email"

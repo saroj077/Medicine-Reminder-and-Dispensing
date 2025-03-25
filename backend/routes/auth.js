@@ -6,45 +6,39 @@ const User = require('../models/User');
 // Register route
 router.post('/register', async (req, res) => {
   try {
-    const {
-      fullName,
-      email,
-      password,
-      phoneNumber,
-      dateOfBirth,
-      emergencyContact,
-      medicalConditions,
-      allergies
-    } = req.body;
+    const { username, email, password } = req.body;
 
     // Check if all required fields are provided
-    if (!fullName || !email || !password || !phoneNumber || !dateOfBirth || 
-        !emergencyContact?.name || !emergencyContact?.phoneNumber || !emergencyContact?.relationship) {
+    if (!username || !email || !password) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide all required fields'
+        message: 'Please provide username, email, and password'
       });
     }
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
+    // Check if username already exists
+    const existingUsername = await User.findOne({ username });
+    if (existingUsername) {
       return res.status(400).json({
         success: false,
-        message: 'A user with this email already exists'
+        message: 'This username is already taken'
+      });
+    }
+
+    // Check if email already exists
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).json({
+        success: false,
+        message: 'This email is already registered'
       });
     }
 
     // Create new user
     const user = new User({
-      fullName,
+      username,
       email,
-      password,
-      phoneNumber,
-      dateOfBirth,
-      emergencyContact,
-      medicalConditions,
-      allergies
+      password
     });
 
     await user.save();
@@ -67,7 +61,7 @@ router.post('/register', async (req, res) => {
     if (error.code === 11000) {
       return res.status(400).json({
         success: false,
-        message: 'This email is already registered'
+        message: 'Username or email is already taken'
       });
     }
 
@@ -122,7 +116,7 @@ router.post('/login', async (req, res) => {
       token,
       user: {
         id: user._id,
-        fullName: user.fullName,
+        username: user.username,
         email: user.email
       }
     });
